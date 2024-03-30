@@ -8,8 +8,14 @@ export const Heroes = () => {
                     <Image
                         src="/hero.webp"
                         fill
-                        className="object-contain"
-                        alt="Hero"
+                        className="object-contain dark:hidden"
+                        alt="Documents"
+                    />
+                    <Image
+                        src="/hero-dark.webp"
+                        fill
+                        className="object-contain hidden dark:block"
+                        alt="Documents"
                     />
                 </div>
             </div>
