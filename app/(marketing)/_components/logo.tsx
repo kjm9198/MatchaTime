@@ -24,7 +24,7 @@ export const Logo = () => {
                className="hidden dark:block"
         />
         <p className={cn("font-semibold", font.className)}>
-            Time Script
+            TimeScript
         </p>
     </div>
   );
