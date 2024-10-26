@@ -7,7 +7,7 @@ import { ConvexClientProvider } from "@/components/convex-providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Time Script",
+  title: "Matcha Time",
   description: "A simple way to keep a connected workspace in sync with time.",
   icons: {
     icon: [
