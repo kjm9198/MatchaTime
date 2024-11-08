@@ -13,8 +13,8 @@ export const Navbar = () => {
     const {isAuthenticated, isLoading} = useConvexAuth();
     return (
         <div className={cn(
-            "z-50 bg-background dark:bg-black fixed top-0 flex items-center w-full px-6 py-4",
-            scrolled && "bg-background shadow-md"
+            "z-50 bg-[#2D502B] dark:bg-black fixed top-0 flex items-center w-full px-6 py-4",
+            scrolled && "bg-[#2D502B] shadow-md"
         )}>
             <Logo />
             <div className="md:ml-auto md:justify-end justify-between w-full flex items-center gap-x-2">
