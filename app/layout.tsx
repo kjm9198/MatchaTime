@@ -38,9 +38,9 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
-            enableSystem
+            enableSystem={true}
             disableTransitionOnChange
-            storageKey="time-script-theme"
+            storageKey="theme-preference"
           >
             {children}
           </ThemeProvider>
