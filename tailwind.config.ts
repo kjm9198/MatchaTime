@@ -1,14 +1,13 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ["class"], // Enables dark mode by adding `class` to the HTML element
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -22,15 +21,10 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: {
-          DEFAULT: "hsl(var(--background))",
-          dark: "#2D502B", // Dark mode background color
-        },
-        foreground: "hsl(var(--foreground))",
-        navbar: {
-          DEFAULT: "hsl(var(--navbar))",
-          dark: "#B0CE85", // Dark mode navbar color
-        },
+        background: "rgb(var(--background) / <alpha-value>)", // Background with custom green in dark mode
+        foreground: "rgb(var(--foreground) / <alpha-value>)", // Text color based on theme
+        navbar: "rgb(var(--navbar) / <alpha-value>)", // Navbar color
+        heading: "rgb(var(--heading) / <alpha-value>)", // Heading color
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

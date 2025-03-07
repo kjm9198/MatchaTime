@@ -5,7 +5,7 @@ import {ArrowRightIcon} from "lucide-react";
 
 export const Heading = () => {
     return (
-        <div className="max-w-3xl bg-[#B0CE85] space-y-4">
+        <div className="max-w-3xl bg-[#B0CE85] dark:bg-[#2D502B] space-y-4">
             <h1 className="text-5xl  sm:text-6xl md:text-7xl font-bold text-white">
                 Your Imagination, Documents & Plans. All in one place. Welcome to
                 <span className=""> MatchaTime </span>.

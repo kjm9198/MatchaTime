@@ -24,7 +24,6 @@ export const metadata: Metadata = {
     ],
   },
 };
-// TODO: Add an icon for the web page later on
 
 export default function RootLayout({
   children,
