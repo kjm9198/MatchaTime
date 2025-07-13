@@ -3,7 +3,7 @@
 import {useConvexAuth} from "convex/react";
 import {Spinner} from "@/app/(marketing)/_components/spinner";
 import {redirect} from "next/navigation";
-// import {Sidebar} from "@/app/(mainsite)/_components_main/sidebar";
+import {Sidebar} from "@/app/(mainsite)/_components_main/sidebar";
 
 const MainLayout = ({
     children
@@ -26,7 +26,7 @@ const MainLayout = ({
 
   return(
       <div className="h-full flex dark:bg-[#2D502B]">
-        {/*<Sidebar />*/}
+        <Sidebar />
         <main className="flex-1 h-full overflow-y-auto">
           {children}
         </main>
