@@ -14,8 +14,10 @@ import { router } from "next/client";
 import {DocumentList} from "@/app/(mainsite)/_components_main/document-list";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TrashBox } from "@/app/(mainsite)/_components_main/trash";
+import { useSearch } from "@/hooks/use-search";
 
 export const Sidebar = () => {
+  const search = useSearch();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const create = useMutation(api.documents.create);
@@ -117,9 +119,6 @@ export const Sidebar = () => {
       error: "Failed to create a new Matcha"
     })
   }
-
-  // @ts-ignore
-  // @ts-ignore
   return (
     <>
       <aside
@@ -140,7 +139,7 @@ export const Sidebar = () => {
               label="Search"
               icon={Search}
               isSearch
-              // onClick ={ search.onOpen }
+              onClick ={ search.onOpen }
           />
           <Item
               label="Settings"
