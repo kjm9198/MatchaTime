@@ -3,19 +3,20 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "@/components/convex-providers";
+import { Toaster } from "sonner";
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin"]
 });
 
 export const metadata: Metadata = {
@@ -26,37 +27,38 @@ export const metadata: Metadata = {
       {
         media: "(prefers-color-scheme: light)",
         url: "/logo.png",
-        href: "/logo.png",
+        href: "/logo.png"
       },
       {
         media: "(prefers-color-scheme: dark)",
         url: "/logo-dark.png",
-        href: "/logo-dark.png",
-      },
-    ],
-  },
+        href: "/logo-dark.png"
+      }
+    ]
+  }
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children
+                                   }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-    <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
-        <ConvexClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem={true}
-            disableTransitionOnChange
-            storageKey="theme-preference"
-          >
-            {children}
-          </ThemeProvider>
-        </ConvexClientProvider>
-      </body>
+    <html lang="en" suppressHydrationWarning className="h-full">
+    <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} font-sans h-full`}>
+    <ConvexClientProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem={true}
+        disableTransitionOnChange
+        storageKey="theme-preference"
+      >
+        <Toaster position="bottom-center"/>
+        {children}
+      </ThemeProvider>
+    </ConvexClientProvider>
+    </body>
     </html>
   );
 }
