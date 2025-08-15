@@ -2,7 +2,7 @@
 
 import { useSettings } from "@/hooks/use-settings";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-import { ModeToggle } from "@/components/providers/mode-toggle";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Label } from "@/components/ui/label";
 
 export const SettingsModal = () => {
