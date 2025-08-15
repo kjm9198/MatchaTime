@@ -33,7 +33,7 @@ export const ConfirmModal = ({ children, onConfirm }: ConfirmModalProps) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you'd like to delete that Matcha?</AlertDialogTitle>
+          <AlertDialogTitle>Are you sure you&apos;d like to delete that Matcha?</AlertDialogTitle>
           <AlertDialogDescription>
             This Matcha cannot be recovered
           </AlertDialogDescription>
