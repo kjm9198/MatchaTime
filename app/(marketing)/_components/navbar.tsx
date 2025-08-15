@@ -10,14 +10,20 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/app/(marketing)/_components/spinner";
 import Link from "next/link";
 
-export const Navbar = () => {
+
+interface NavbarProps {
+  isCollapsed?: boolean,
+  onResetWidth?: () => void
+}
+
+export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const scrolled = useScrollTop();
   const { isAuthenticated, isLoading } = useConvexAuth();
   return (
     <div
       className={cn(
         "z-50 bg-[#2D502B] dark:bg-[#B0CE85] fixed top-0 flex items-center w-full px-6 py-4",
-        scrolled && "bg-[#2D502B] dark:bg-[#B0CE85] shadow-md",
+        scrolled && "bg-[#2D502B] dark:bg-[#B0CE85] shadow-md"
       )}
     >
       <Logo />
