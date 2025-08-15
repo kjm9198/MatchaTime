@@ -15,8 +15,10 @@ import {DocumentList} from "@/app/(mainsite)/_components_main/document-list";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { TrashBox } from "@/app/(mainsite)/_components_main/trash";
 import { useSearch } from "@/hooks/use-search";
+import { useSettings } from "@/hooks/use-settings";
 
 export const Sidebar = () => {
+  const settings = useSettings();
   const search = useSearch();
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -144,7 +146,7 @@ export const Sidebar = () => {
           <Item
               label="Settings"
               icon={Settings}
-              // onClick ={ settings.onOpen }
+              onClick ={ settings.onOpen }
           />
           <Item
             onClick={handleCreate}

@@ -4,7 +4,7 @@ import {useConvexAuth} from "convex/react";
 import {Spinner} from "@/app/(marketing)/_components/spinner";
 import {redirect} from "next/navigation";
 import {Sidebar} from "@/app/(mainsite)/_components_main/sidebar";
-import { SearchCommand } from "@/components/search-command";
+import { SearchCommand } from "@/components/providers/search-command";
 
 const MainLayout = ({
     children
