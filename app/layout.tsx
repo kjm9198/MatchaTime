@@ -4,7 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ConvexClientProvider } from "@/components/providers/convex-providers";
 import { Toaster } from "sonner";
-import {ModalProvider} from "@/components/providers/modal-providers";
+import { ModalProvider } from "@/components/providers/modal-providers";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 const inter = Inter({
   subsets: ["latin"]
@@ -48,17 +49,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="h-full">
     <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} font-sans h-full`}>
     <ConvexClientProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem={true}
-        disableTransitionOnChange
-        storageKey="theme-preference"
-      >
-        <Toaster position="bottom-center"/>
-        <ModalProvider/>
-        {children}
-      </ThemeProvider>
+      <EdgeStoreProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+          disableTransitionOnChange
+          storageKey="theme-preference"
+        >
+          <Toaster position="bottom-center" />
+          <ModalProvider />
+          {children}
+        </ThemeProvider>
+      </EdgeStoreProvider>
     </ConvexClientProvider>
     </body>
     </html>
