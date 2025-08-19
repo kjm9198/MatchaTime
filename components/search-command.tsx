@@ -12,9 +12,10 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
+  CommandList
 } from "@/components/ui/command";
 import { File } from "lucide-react";
+import { DialogTitle } from "@/components/ui/dialog";
 
 export const SearchCommand = () => {
   const { user } = useUser();
@@ -51,27 +52,29 @@ export const SearchCommand = () => {
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
-      <CommandInput placeholder={`Search ${user?.fullName}'s Matcha Time...`} />
-      <CommandList>
-        <CommandEmpty>No Matcha found</CommandEmpty>
-        <CommandGroup heading="Documents">
-          {documents?.map((document) => (
-            <CommandItem
-              key={document._id}
-              value={document.title}
-              title={document.title}
-              onSelect={() => onSelect(document._id)}
-            >
-              {document.icon ? (
-                <p className="mr-2 text-[18px]">{document.icon}</p>
-              ) : (
-                <File className="mr-2 h-4 w-4" />
-              )}
-              <span>{document.title}</span>
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
+      <DialogTitle>
+        <CommandInput placeholder={`Search ${user?.fullName}'s Matcha Time...`} />
+        <CommandList>
+          <CommandEmpty>No Matcha found</CommandEmpty>
+          <CommandGroup heading="Documents">
+            {documents?.map((document) => (
+              <CommandItem
+                key={document._id}
+                value={document.title}
+                title={document.title}
+                onSelect={() => onSelect(document._id)}
+              >
+                {document.icon ? (
+                  <p className="mr-2 text-[18px]">{document.icon}</p>
+                ) : (
+                  <File className="mr-2 h-4 w-4" />
+                )}
+                <span>{document.title}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </DialogTitle>
     </CommandDialog>
   );
 };

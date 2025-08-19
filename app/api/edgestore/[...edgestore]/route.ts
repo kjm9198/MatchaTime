@@ -9,7 +9,7 @@ const es = initEdgeStore.create();
 const edgeStoreRouter = es.router({
   publicFiles: es
     .fileBucket({
-      accept: ["image/*", "video/mp4", "video/webm", "video/ogg"], // Allow images and specific video formats
+      accept: ["image/*"], // Allow only images
       maxSize: 1024 * 1024 * 50, // Set max size to 50MB
     })
     .beforeDelete(() => {
