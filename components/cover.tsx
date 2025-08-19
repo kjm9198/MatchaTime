@@ -24,19 +24,10 @@ export const Cover = ({ url, preview }: CoverImageProps) => {
   const removeCoverImage = useMutation(api.documents.removeCoverImage);
 
   const onRemove = async () => {
-    try {
-      if (url && url.startsWith("https://")) {
-        try {
-          await edgestore.publicFiles.delete({ url });
-        } catch (e) {
-          console.warn("Failed to delete file from EdgeStore:", e);
-        }
-      }
-      await removeCoverImage({ id: params.documentId as Id<"documents"> });
-    } catch (error) {
-      console.error("Error removing cover:", error);
-    }
+    if (url) await edgestore.publicFiles.delete({ url: url });
+    removeCoverImage({ id: params.documentId as Id<"documents"> });
   };
+
 
   return (
     <div
@@ -46,7 +37,16 @@ export const Cover = ({ url, preview }: CoverImageProps) => {
         url && "bg-muted"
       )}
     >
-      {!!url && <Image src={url} fill alt="Cover" className="object-cover" />}
+      {!!url && (
+        <Image
+          src={url}
+          alt="Cover"
+          fill
+          style={{ objectFit: "cover" }}
+          sizes="100vw"
+          priority
+        />
+      )}
       {url && !preview && (
         <div className="opacity-0 group-hover:opacity-100 absolute bottom-5 right-5 flex items-center gap-x-2">
           <Button

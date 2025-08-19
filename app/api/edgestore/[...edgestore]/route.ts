@@ -1,13 +1,20 @@
-import { initEdgeStore } from '@edgestore/server';
-import { createEdgeStoreNextHandler } from '@edgestore/server/adapters/next/app';
+import { initEdgeStore } from "@edgestore/server";
+import { createEdgeStoreNextHandler } from "@edgestore/server/adapters/next/app";
 
 const es = initEdgeStore.create();
 
 /**
- * This is the main router for the EdgeStore buckets.
+ * This is the main router for the Edge Store buckets.
  */
 const edgeStoreRouter = es.router({
-  publicFiles: es.fileBucket(),
+  publicFiles: es
+    .fileBucket({
+      accept: ["image/*", "video/mp4", "video/webm", "video/ogg"], // Allow images and specific video formats
+      maxSize: 1024 * 1024 * 50, // Set max size to 50MB
+    })
+    .beforeDelete(() => {
+      return true;
+    }),
 });
 
 const handler = createEdgeStoreNextHandler({

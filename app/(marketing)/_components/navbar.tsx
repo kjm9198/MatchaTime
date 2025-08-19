@@ -22,8 +22,8 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   return (
     <div
       className={cn(
-        "z-50 bg-[#2D502B] dark:bg-[#B0CE85] fixed top-0 flex items-center w-full px-6 py-4",
-        scrolled && "bg-[#2D502B] dark:bg-[#B0CE85] shadow-md"
+        "z-50 bg-[#2D502B] dark:bg-[#265934] fixed top-0 flex items-center w-full px-6 py-4",
+        scrolled && "bg-[#2D502B] dark:bg-[#265934] shadow-md"
       )}
     >
       <Logo />

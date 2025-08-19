@@ -29,12 +29,15 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     });
 
     return (
-        <div>
+        <div
+            style={{ minHeight: "100vh", overflowY: "auto" }}
+            className="bg-background text-foreground"
+        >
             <BlockNoteView
                 editable={editable}
                 editor={editor}
                 onChange={() => {
-                    JSON.stringify(editor.document, null, 2);
+                    onChange(JSON.stringify(editor.document));
                 }}
                 theme={resolvedTheme === "dark" ? "dark" : "light"}
             />
