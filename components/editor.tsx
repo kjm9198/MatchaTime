@@ -5,79 +5,151 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { BlockNoteEditor } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
+import "@blocknote/core/style.css";
 import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 
 interface EditorProps {
-  onChange: (value: string) => void;
-  initialContent?: string;
-  editable?: boolean;
+    onChange: (value: string) => void;
+    initialContent?: string;
+    editable?: boolean;
 }
 
 const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
-  const { resolvedTheme } = useTheme();
-  const { edgestore } = useEdgeStore();
+    const { resolvedTheme } = useTheme();
+    const { edgestore } = useEdgeStore();
 
-  const handleUpload = async (file: File) => {
-    const response = await edgestore.publicFiles.upload({ file });
-    return response.url;
-  };
+    const handleUpload = async (file: File) => {
+        const response = await edgestore.publicFiles.upload({ file });
+        return response.url;
+    };
 
-  const editor: BlockNoteEditor = useCreateBlockNote({
-    initialContent: initialContent ? JSON.parse(initialContent) : undefined,
-    uploadFile: handleUpload
-  });
+    const extractTextFromBlocks = (blocks: any[]): string => {
+        if (!Array.isArray(blocks)) return "";
+        return blocks
+            .map((b: any) => Array.isArray(b?.content) ? b.content.map((c: any) => (typeof c?.text === "string" ? c.text : "")).join("") : "")
+            .join("\n");
+    };
 
-  // Define light and dark theme objects
-  const lightTheme = {
-    colors: {
-      editor: {
-        background: "#B0CE85",
-        text: "#000000"
-      },
-      menu: {
-        background: "#B0CE85",
-        text: "#000000"
-      },
-      tooltip: {
-        background: "#000000",
-        text: "#B0CE85"
-      }
-    }
-  };
+    const getSelectedOrAllText = (ed: any): string => {
+        const sel = ed?.getSelection?.();
+        if (sel && Array.isArray(sel.blocks) && sel.blocks.length) {
+            return extractTextFromBlocks(sel.blocks);
+        }
+        return extractTextFromBlocks(ed?.document || []);
+    };
 
-  const darkTheme = {
-    colors: {
-      editor: {
-        background: "#2D502B",
-        text: "#FFFFFF"
-      },
-      menu: {
-        background: "#2D502B",
-        text: "#FFFFFF"
-      },
-      tooltip: {
-        background: "#FFFFFF",
-        text: "#2D502B"
-      }
-    }
-  };
-  const customTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
+    const runAI = async (mode: "generate" | "summarize", text: string): Promise<string> => {
+        try {
+            const res = await fetch("/api/ai", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: text, mode }),
+            });
+            const data = await res.json();
+            return data?.content || "";
+        } catch {
+            return "";
+        }
+    };
 
-  return (
-    <div
-      style={{ minHeight: "100vh", overflowY: "auto" }}
-    >
-      <BlockNoteView
-        editable={editable}
-        editor={editor}
-        onChange={() => {
-          onChange(JSON.stringify(editor.document));
-        }}
-        theme={resolvedTheme === "dark" ? darkTheme : lightTheme}
-      />
-    </div>
-  );
+    const editor: BlockNoteEditor = useCreateBlockNote({
+        initialContent: initialContent ? JSON.parse(initialContent) : undefined,
+        uploadFile: handleUpload,
+    });
+
+
+    const insertAtCursor = (text: string) => {
+        const anchor = editor?.getTextCursorPosition?.()?.block ?? editor.document[editor.document.length - 1];
+        editor.insertBlocks(
+            [{ type: "paragraph", content: [text] }],
+            anchor,
+            "after"
+        );
+    };
+
+    const handleGenerate = async () => {
+        const prompt = typeof window !== "undefined" ? window.prompt("What should I write about?", "") : "";
+        const seed = (prompt && prompt.trim()) || getSelectedOrAllText(editor) || "Write something helpful for the user.";
+        const out = await runAI("generate", seed);
+        if (!out) return;
+        insertAtCursor(out);
+    };
+
+    const handleSummarize = async () => {
+        const txt = getSelectedOrAllText(editor);
+        if (!txt) return;
+        const out = await runAI("summarize", txt);
+        if (!out) return;
+        const sel = editor?.getSelection?.();
+        if (sel && Array.isArray(sel.blocks) && sel.blocks.length) {
+            editor.replaceBlocks(sel.blocks, [
+                { type: "paragraph", content: [out] },
+            ]);
+        } else {
+            editor.replaceBlocks(editor.document, [
+                { type: "paragraph", content: [out] },
+            ]);
+        }
+    };
+
+    const lightVars = {
+      ["--bn-colors-editor-background" as any]: "#B0CE85",
+      ["--bn-colors-editor-text" as any]: "#000000",
+      ["--bn-colors-menu-background" as any]: "#B0CE85",
+      ["--bn-colors-menu-text" as any]: "#000000",
+      ["--bn-colors-tooltip-background" as any]: "#000000",
+      ["--bn-colors-tooltip-text" as any]: "#B0CE85",
+    } as React.CSSProperties;
+
+    const darkVars = {
+      ["--bn-colors-editor-background" as any]: "#2D502B",
+      ["--bn-colors-editor-text" as any]: "#FFFFFF",
+      ["--bn-colors-menu-background" as any]: "#2D502B",
+      ["--bn-colors-menu-text" as any]: "#FFFFFF",
+      ["--bn-colors-tooltip-background" as any]: "#FFFFFF",
+      ["--bn-colors-tooltip-text" as any]: "#2D502B",
+    } as React.CSSProperties;
+
+    return (
+        <div
+            className="matcha-editor"
+            style={{
+              minHeight: "100vh",
+              overflowY: "auto",
+              ...(resolvedTheme === "dark" ? darkVars : lightVars),
+            }}
+        >
+          <div className="flex gap-2 p-2">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="rounded border px-3 py-1 text-sm bg-white/70 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20"
+              aria-label="AI Generate"
+              title="/ai"
+            >
+              /ai Generate
+            </button>
+            <button
+              type="button"
+              onClick={handleSummarize}
+              className="rounded border px-3 py-1 text-sm bg-white/70 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20"
+              aria-label="Summarize"
+              title="/summarize"
+            >
+              /summarize
+            </button>
+          </div>
+          <BlockNoteView
+            editable={editable}
+            editor={editor}
+            onChange={() => {
+              onChange(JSON.stringify(editor.document));
+            }}
+            theme={resolvedTheme === "dark" ? "dark" : "light"}
+          />
+        </div>
+    );
 };
 
 export default Editor;

@@ -89,3 +89,15 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+/* MatchaTime — make BlockNote background inherit the page background */
+.matcha-editor .bn-container,
+.matcha-editor .bn-root,
+.matcha-editor .bn-editor,
+.matcha-editor .bn-editor .ProseMirror {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.matcha-editor .bn-container {
+  border-color: transparent !important;
+}
