@@ -42,7 +42,7 @@ export const Title = ({ initialData }: TitleProps) => {
     };
 
     return (
-        <div className="flex items-center gap-x-1">
+        <div className="text-white hover:bg-[#43734a] dark:hover:bg-[#0e2912] flex items-center gap-x-1">
             {!!initialData.icon && <p>{initialData.icon}</p>}
             {isEditing ? (
                 <Input
@@ -52,16 +52,16 @@ export const Title = ({ initialData }: TitleProps) => {
                     onChange={onChange}
                     onKeyDown={onKeyDown}
                     value={title}
-                    className="h-7 px-2 focus-visible:ring-transparent"
+                    className="hover:bg-[#43734a] dark:hover:bg-[#0e2912] h-7 px-2 focus-visible:ring-transparent"
                 />
             ) : (
                 <Button
                     onClick={enableInput}
                     variant="ghost"
                     size="sm"
-                    className="font-normal h-auto p-1"
+                    className="hover:bg-[#43734a] dark:hover:bg-[#0e2912] font-normal h-auto p-1"
                 >
-                    <span className="truncate">{initialData?.title}</span>
+                    <span className="hover:bg-[#43734a] dark:hover:bg-[#0e2912] truncate">{initialData?.title}</span>
                 </Button>
             )}
         </div>
@@ -69,5 +69,5 @@ export const Title = ({ initialData }: TitleProps) => {
 };
 
 Title.Skeleton = function TitleSkeleton() {
-    return <Skeleton className="h-9 w-20 rounded-md" />;
+    return <Skeleton className="hover:bg-[#43734a] dark:hover:bg-[#0e2912] h-9 w-20 rounded-md" />;
 };

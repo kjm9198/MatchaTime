@@ -22,8 +22,8 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   return (
     <div
       className={cn(
-        "z-50 bg-[#2D502B] dark:bg-[#265934] fixed top-0 flex items-center w-full px-6 py-4",
-        scrolled && "bg-[#2D502B] dark:bg-[#265934] shadow-md"
+        "z-50 bg-[#43734a] dark:bg-[#0e2912] fixed top-0 flex items-center w-full px-6 py-4",
+        scrolled && "bg-[#43734a] dark:bg-[#0e2912] shadow-md"
       )}
     >
       <Logo />
@@ -47,7 +47,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         )}
         {isAuthenticated && !isLoading && (
           <>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="hover:bg-[#97bf88] dark:hover:bg-[#1d3d22]" asChild >
               <Link href={"/documents"}>Enter MatchaTime</Link>
             </Button>
             <UserButton afterSignOutUrl="/" />

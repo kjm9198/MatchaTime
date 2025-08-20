@@ -8,7 +8,7 @@ import { MenuIcon } from "lucide-react";
 import { Title } from "@/app/(mainsite)/_components_main/title";
 import { Banner } from "@/app/(mainsite)/_components_main/banner";
 import { Menu } from "@/app/(mainsite)/_components_main/menu";
-// import { Publish } from "@/components/main/publish";
+import { Publish } from "@/app/(mainsite)/_components_main/publish";
 
 interface NavbarProps {
   isCollapsed: boolean;
@@ -24,7 +24,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   if (document === undefined) {
     return (
-      <nav className="bg-navbar dark:bg-navbar px-3 py-2 w-full flex items-center justify-between">
+      <nav className="bg-[#43734a] dark:bg-[#0e2912] px-3 py-2 w-full flex items-center justify-between">
         <Title.Skeleton />
         <div className="flex items-center gap-x-2">
           <Menu.Skeleton />
@@ -35,9 +35,10 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   if (document === null) return null;
 
+  // @ts-ignore
   return (
     <>
-      <nav className="bg-navbar dark:bg-navbar px-3 py-2 w-full flex items-center gap-x-4">
+      <nav className="bg-[#43734a] dark:bg-[#0e2912] px-3 py-2 w-full flex items-center gap-x-4">
         {isCollapsed && (
           <MenuIcon
             role="button"
@@ -48,7 +49,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
           <div className="flex items-center gap-x-2">
-            {/*<Publish initialData={document} />*/}
+            <Publish initialData={document} />
             <Menu documentId={document._id} />
           </div>
         </div>

@@ -26,7 +26,7 @@ const MainLayout = ({
   }
 
   return(
-      <div className="h-full flex bg-[#B0CE85] dark:bg-[#2D502B]">
+      <div className="h-full flex bg-[#97bf88] dark:bg-[#2D502B]">
         <Sidebar />
         <main className="flex-1 h-full overflow-y-auto">
           <SearchCommand/>
