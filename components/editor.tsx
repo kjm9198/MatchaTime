@@ -9,6 +9,7 @@ import "@blocknote/core/style.css";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { Button } from "@/components/ui/button";
+import { useEffect, useCallback } from "react";
 
 interface EditorProps {
   onChange: (value: string) => void;
@@ -69,15 +70,15 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     );
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     const prompt = typeof window !== "undefined" ? window.prompt("What should I write about?", "") : "";
     const seed = (prompt && prompt.trim()) || getSelectedOrAllText(editor) || "Write something helpful for the user.";
     const out = await runAI("generate", seed);
     if (!out) return;
     insertAtCursor(out);
-  };
+  }, [editor]);
 
-  const handleSummarize = async () => {
+  const handleSummarize = useCallback(async () => {
     const txt = getSelectedOrAllText(editor);
     if (!txt) return;
     const out = await runAI("summarize", txt);
@@ -92,7 +93,24 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         { type: "paragraph", content: [out] }
       ]);
     }
-  };
+  }, [editor]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ type: "summarize" | "generate" }>).detail;
+      if (!detail) return;
+      if (detail.type === "summarize") {
+        void handleSummarize();
+      } else if (detail.type === "generate") {
+        void handleGenerate();
+      }
+    };
+    window.addEventListener("matcha:editor-action", handler as EventListener);
+    return () => {
+      window.removeEventListener("matcha:editor-action", handler as EventListener);
+    };
+  }, [handleGenerate, handleSummarize]);
 
   const lightVars = {
     ["--bn-colors-editor-background" as any]: "#B0CE85",
@@ -123,30 +141,30 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         ...(resolvedTheme === "dark" ? darkVars : lightVars)
       }}
     >
-      <div className="flex gap-2 p-2">
-        <Button
-          style={{
-            paddingRight: level ? `${level*12 + 150 + 12}px` : undefined
-          }}
-          size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"
-          onClick={handleGenerate}
-          aria-label="AI Generate"
-          title="AI"
-        >
-          MatchAI
-        </Button>
-        <Button
-          style={{
-            paddingRight: level ? `${level*12 + 150 + 12}px` : undefined
-          }}
-          size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white  hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"
-          onClick={handleSummarize}
-          aria-label="Summarize"
-          title="Summarization"
-        >
-          Summarize Matcha
-        </Button>
-      </div>
+      {/*<div className="flex gap-2 p-2">*/}
+        {/*<Button*/}
+        {/*  style={{*/}
+        {/*    paddingRight: level ? `${level*12 + 150 + 12}px` : undefined*/}
+        {/*  }}*/}
+        {/*  size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"*/}
+        {/*  onClick={handleGenerate}*/}
+        {/*  aria-label="AI Generate"*/}
+        {/*  title="AI"*/}
+        {/*>*/}
+        {/*  MatchAI*/}
+        {/*</Button>*/}
+        {/*<Button*/}
+        {/*  style={{*/}
+        {/*    paddingRight: level ? `${level*12 + 150 + 12}px` : undefined*/}
+        {/*  }}*/}
+        {/*  size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white  hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"*/}
+        {/*  onClick={handleSummarize}*/}
+        {/*  aria-label="Summarize"*/}
+        {/*  title="Summarization"*/}
+        {/*>*/}
+        {/*  Summarize Matcha*/}
+        {/*</Button>*/}
+      {/*</div>*/}
       <BlockNoteView
         editable={editable}
         editor={editor}

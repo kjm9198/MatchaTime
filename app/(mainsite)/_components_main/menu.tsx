@@ -39,7 +39,7 @@ export const Menu = ({ documentId }: MenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button className="text-white hover:text-[#43734a] dark:hover:text-[#0e2912] dark:hover:bg-white" size="sm" variant="ghost">
+                <Button className="bg-[#43734a] dark:bg-[#0e2912] text-white dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" size="sm" variant="ghost">
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>

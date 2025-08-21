@@ -9,11 +9,14 @@ import { Title } from "@/app/(mainsite)/_components_main/title";
 import { Banner } from "@/app/(mainsite)/_components_main/banner";
 import { Menu } from "@/app/(mainsite)/_components_main/menu";
 import { Publish } from "@/app/(mainsite)/_components_main/publish";
+import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
   isCollapsed: boolean;
   onResetWidth: () => void;
 }
+
+
 
 export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const params = useParams();
@@ -21,6 +24,11 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const document = useQuery(api.documents.getById, {
     documentId: params.documentId as Id<"documents">,
   });
+
+  const fire = (type: "summarize" | "generate") => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new CustomEvent("matcha:editor-action", { detail: { type } }));
+  };
 
   if (document === undefined) {
     return (
@@ -49,6 +57,12 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
           <div className="flex items-center gap-x-2">
+            <Button size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" onClick={() => fire("generate")}>
+              MatchAI
+            </Button>
+            <Button size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" onClick={() => fire("summarize")}>
+              Summarize
+            </Button>
             <Publish initialData={document} />
             <Menu documentId={document._id} />
           </div>
