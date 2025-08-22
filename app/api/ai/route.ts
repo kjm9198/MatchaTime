@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         { role: "user", content: prompt },
       ],
       temperature: mode === "summarize" ? 0.2 : 0.7,
-      max_tokens: mode === "summarize" ? 384 : 4000, // small safe caps
+      max_tokens: mode === "summarize" ? 2000 : 4000, // small safe caps
     };
 
     const res = await fetch(`${OR_BASE}/chat/completions`, {
