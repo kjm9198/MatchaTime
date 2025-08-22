@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import type React from "react";
 import { useEdgeStore } from "@/lib/edgestore";
 import { BlockNoteEditor } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
@@ -70,9 +71,8 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     );
   };
 
-  const handleGenerate = useCallback(async () => {
-    const prompt = typeof window !== "undefined" ? window.prompt("What should I write about?", "") : "";
-    const seed = (prompt && prompt.trim()) || getSelectedOrAllText(editor) || "Write something helpful for the user.";
+  const handleGenerate = useCallback(async (userPrompt?: string) => {
+    const seed = (userPrompt && userPrompt.trim()) || getSelectedOrAllText(editor) || "Write something helpful for the user.";
     const out = await runAI("generate", seed);
     if (!out) return;
     insertAtCursor(out);
@@ -98,12 +98,12 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handler = (e: Event) => {
-      const detail = (e as CustomEvent<{ type: "summarize" | "generate" }>).detail;
+      const detail = (e as CustomEvent<{ type: "summarize" | "generate"; prompt?: string }>).detail;
       if (!detail) return;
       if (detail.type === "summarize") {
         void handleSummarize();
       } else if (detail.type === "generate") {
-        void handleGenerate();
+        void handleGenerate(detail.prompt);
       }
     };
     window.addEventListener("matcha:editor-action", handler as EventListener);

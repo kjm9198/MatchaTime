@@ -73,18 +73,18 @@ export const Publish = ({
 
     return (
         <Popover>
-            <PopoverTrigger asChild>
+            <PopoverTrigger className="bg-[#c1d9c4] dark:bg-[#153d1b]" asChild>
                 <Button className="bg-[#43734a] dark:bg-[#0e2912] text-white dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" size="sm" variant="ghost">
                     Publish
                     {initialData.isPublished && (
                         <Globe
-                            className="text-sky-500 w-4 h-4 ml-2"
+                            className="text-[#43734a] w-4 h-4 ml-2"
                         />
                     )}
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-72"
+                className="bg-[#c1d9c4] dark:bg-[#153d1b] w-72"
                 align="end"
                 alignOffset={8}
                 forceMount
@@ -92,8 +92,8 @@ export const Publish = ({
                 {initialData.isPublished ? (
                     <div className="space-y-4">
                         <div className="flex items-center gap-x-2">
-                            <Globe className="text-sky-500 animate-pulse h-4 w-4" />
-                            <p className="text-xs font-medium text-sky-500">
+                            <Globe className="text-[#43734a] animate-pulse h-4 w-4" />
+                            <p className="text-xs font-medium text-[#43734a]">
                                 This Matcha is live on web.
                             </p>
                         </div>
@@ -106,7 +106,7 @@ export const Publish = ({
                             <Button
                                 onClick={onCopy}
                                 disabled={copied}
-                                className="h-8 rounded-l-none"
+                                className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22] h-8 rounded-l-none"
                             >
                                 {copied ? (
                                     <Check className="h-4 w-4" />
@@ -117,7 +117,7 @@ export const Publish = ({
                         </div>
                         <Button
                             size="sm"
-                            className="w-full text-xs"
+                            className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22] w-full text-xs"
                             disabled={isSubmitting}
                             onClick={onUnpublish}
                         >
@@ -133,7 +133,7 @@ export const Publish = ({
                             Publish this Matcha
                         </p>
                         <span className="text-xs text-muted-foreground mb-4">
-              Share your work with others.
+              Share your Matcha with others.
             </span>
                         <Button
                             disabled={isSubmitting}

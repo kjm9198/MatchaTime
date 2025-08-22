@@ -4,12 +4,15 @@ import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, ArrowRight } from "lucide-react";
 import { Title } from "@/app/(mainsite)/_components_main/title";
 import { Banner } from "@/app/(mainsite)/_components_main/banner";
 import { Menu } from "@/app/(mainsite)/_components_main/menu";
 import { Publish } from "@/app/(mainsite)/_components_main/publish";
 import { Button } from "@/components/ui/button";
+
+import { useState } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 interface NavbarProps {
   isCollapsed: boolean;
@@ -21,13 +24,18 @@ interface NavbarProps {
 export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const params = useParams();
 
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
+
   const document = useQuery(api.documents.getById, {
     documentId: params.documentId as Id<"documents">,
   });
 
-  const fire = (type: "summarize" | "generate") => {
+  const fire = (type: "summarize" | "generate", prompt?: string) => {
     if (typeof window === "undefined") return;
-    window.dispatchEvent(new CustomEvent("matcha:editor-action", { detail: { type } }));
+    window.dispatchEvent(
+      new CustomEvent("matcha:editor-action", { detail: { type, prompt } })
+    );
   };
 
   if (document === undefined) {
@@ -57,9 +65,47 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
           <div className="flex items-center gap-x-2">
-            <Button size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" onClick={() => fire("generate")}>
-              MatchAI
-            </Button>
+            <Popover open={aiOpen} onOpenChange={setAiOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  size="sm"
+                  className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"
+                >
+                  MatchAI
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" alignOffset={8} className="w-72 p-3">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-[#43734a] dark:text-white">
+                    Enter a prompt
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          fire("generate", aiPrompt.trim());
+                          setAiOpen(false);
+                        }
+                      }}
+                      placeholder="Prompt..."
+                      className="flex-1 h-8 rounded-md border px-2 text-sm bg-white dark:bg-[#153d1b] text-black dark:text-white placeholder:text-gray-400 outline-none"
+                    />
+                    <Button
+                      size="icon"
+                      className="h-8 w-8 bg-[#43734a] dark:bg-[#0e2912] text-white hover:bg-[#1d3d22]"
+                      onClick={() => {
+                        fire("generate", aiPrompt.trim());
+                        setAiOpen(false);
+                      }}
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
             <Button size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" onClick={() => fire("summarize")}>
               Summarize
             </Button>
