@@ -138,7 +138,7 @@ export const Publish = ({
                         <Button
                             disabled={isSubmitting}
                             onClick={onPublish}
-                            className="text-white w-full text-xs"
+                            className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#97bf88] dark:hover:bg-[#1d3d22] w-full text-xs"
                             size="sm"
                         >
                             Publish
