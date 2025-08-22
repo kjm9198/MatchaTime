@@ -50,11 +50,16 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         body: JSON.stringify({ prompt: text, mode })
       });
       const data = await res.json();
+      if (data?.error) {
+        console.error("AI error:", data.error);
+      }
       return data?.content || "";
-    } catch {
+    } catch (e) {
+      console.error("AI request failed:", e);
       return "";
     }
   };
+
 
   const editor: BlockNoteEditor = useCreateBlockNote({
     initialContent: initialContent ? JSON.parse(initialContent) : undefined,
@@ -63,7 +68,10 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
 
 
   const insertAtCursor = (text: string) => {
-    const anchor = editor?.getTextCursorPosition?.()?.block ?? editor.document[editor.document.length - 1];
+    const anchor =
+      editor?.getTextCursorPosition?.()?.block ??
+      editor.document[editor.document.length - 1];
+
     editor.insertBlocks(
       [{ type: "paragraph", content: [text] }],
       anchor,

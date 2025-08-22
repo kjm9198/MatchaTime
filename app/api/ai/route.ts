@@ -1,38 +1,65 @@
-import { NextResponse } from "next/server";
+// app/api/ai/route.ts
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const { prompt, mode } = await req.json();
+export const runtime = "nodejs";
 
-  // Define system prompt based on mode
-  const systemPrompt =
-    mode === "summarize"
-      ? "Summarize into clean Markdown. Use only '#' headings (no '**bold** headings'). Use '-' bullets and numbered lists. No code fences/backticks — return raw Markdown only."
-      : "Generate clean Markdown. Use only '#' headings (no '**bold** headings'). Use '-' bullets and numbered lists. No code fences/backticks — return raw Markdown only.";
+const OR_BASE = "https://openrouter.ai/api/v1";
+const MODEL = "tngtech/deepseek-r1t2-chimera:free";
 
+export async function POST(req: NextRequest) {
   try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const { prompt, mode } = (await req.json()) as {
+      prompt: string;
+      mode: "generate" | "summarize";
+    };
+
+    if (!prompt || !mode) {
+      return NextResponse.json({ content: "", error: "Missing prompt or mode" }, { status: 400 });
+    }
+
+    const system =
+      mode === "summarize"
+        ? "You are a concise summarizer. Summarize faithfully, keep key headings and bullet points. Output Markdown."
+        : "You are a helpful writing assistant. Follow the instruction and produce clear, useful Markdown.";
+
+    const body = {
+      model: MODEL,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: prompt },
+      ],
+      temperature: mode === "summarize" ? 0.2 : 0.7,
+      max_tokens: mode === "summarize" ? 384 : 4000, // small safe caps
+    };
+
+    const res = await fetch(`${OR_BASE}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "https://matcha-time.vercel.app", // optional, helps OpenRouter dashboard
-        "X-Title": "MatchaTime", // optional
+        "HTTP-Referer": process.env.SITE_URL || "https://matcha-time.vercel.app",
+        "X-Title": process.env.APP_NAME || "MatchaTime",
       },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-r1:free", // 🔒 locked to DeepSeek free
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: prompt },
-        ],
-      }),
+      body: JSON.stringify(body),
     });
 
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      return NextResponse.json(
+        { content: "", error: `OpenRouter error ${res.status}: ${text}` },
+        { status: 200 }
+      );
+    }
+
     const data = await res.json();
-    const content = data?.choices?.[0]?.message?.content || "";
+    const content =
+      data?.choices?.[0]?.message?.content ??
+      data?.choices?.[0]?.text ??
+      data?.content ??
+      "";
 
     return NextResponse.json({ content });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "AI request failed" }, { status: 500 });
+  } catch (e: any) {
+    return NextResponse.json({ content: "", error: e?.message || "Server error" }, { status: 200 });
   }
 }
