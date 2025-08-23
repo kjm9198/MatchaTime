@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 
 import { useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Spinner } from "@/app/(marketing)/_components/spinner";
 
 interface NavbarProps {
   isCollapsed: boolean;
@@ -26,6 +27,8 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiOpen, setAiOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
 
   const document = useQuery(api.documents.getById, {
     documentId: params.documentId as Id<"documents">,
@@ -36,6 +39,11 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
     window.dispatchEvent(
       new CustomEvent("matcha:editor-action", { detail: { type, prompt } })
     );
+    if (type === "generate") {
+      setIsGenerating(true);
+    } else {
+      setIsSummarizing(true);
+    }
   };
 
   if (document === undefined) {
@@ -69,9 +77,17 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
               <PopoverTrigger asChild>
                 <Button
                   size="sm"
+                  disabled={isGenerating || isSummarizing}
                   className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"
                 >
-                  MatchAI
+                  {isGenerating ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner size="sm" />
+                      Generating...
+                    </div>
+                  ) : (
+                    "MatchAI"
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" alignOffset={8} className="w-72 p-3">
@@ -91,9 +107,11 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                       }}
                       placeholder="Prompt..."
                       className="flex-1 h-8 rounded-md border px-2 text-sm bg-white dark:bg-[#153d1b] text-black dark:text-white placeholder:text-gray-400 outline-none"
+                      disabled={isGenerating || isSummarizing}
                     />
                     <Button
                       size="icon"
+                      disabled={isGenerating || isSummarizing}
                       className="h-8 w-8 bg-[#43734a] dark:bg-[#0e2912] text-white hover:bg-[#1d3d22]"
                       onClick={() => {
                         fire("generate", aiPrompt.trim());
@@ -106,8 +124,20 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                 </div>
               </PopoverContent>
             </Popover>
-            <Button size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]" onClick={() => fire("summarize")}>
-              Summarize
+            <Button
+              size="sm"
+              disabled={isGenerating || isSummarizing}
+              className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"
+              onClick={() => fire("summarize")}
+            >
+              {isSummarizing ? (
+                <div className="flex items-center gap-2">
+                  <Spinner size="sm" />
+                  Summarizing...
+                </div>
+              ) : (
+                "Summarize"
+              )}
             </Button>
             <Publish initialData={document} />
             <Menu documentId={document._id} />

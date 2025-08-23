@@ -10,7 +10,7 @@ import "@blocknote/core/style.css";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { Button } from "@/components/ui/button";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 interface EditorProps {
   onChange: (value: string) => void;
@@ -21,6 +21,9 @@ interface EditorProps {
 const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   const { resolvedTheme } = useTheme();
   const { edgestore } = useEdgeStore();
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
 
   const handleUpload = async (file: File) => {
     const response = await edgestore.publicFiles.upload({ file });
@@ -80,17 +83,29 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   };
 
   const handleGenerate = useCallback(async (userPrompt?: string) => {
+    setIsGenerating(true);  // Start loading
     const seed = (userPrompt && userPrompt.trim()) || getSelectedOrAllText(editor) || "Write something helpful for the user.";
     const out = await runAI("generate", seed);
-    if (!out) return;
+    if (!out) {
+      setIsGenerating(false);  // Reset loading state if no output
+      return;
+    }
     insertAtCursor(out);
+    setIsGenerating(false);  // Reset loading state after completion
   }, [editor]);
 
   const handleSummarize = useCallback(async () => {
+    setIsSummarizing(true);  // Start loading
     const txt = getSelectedOrAllText(editor);
-    if (!txt) return;
+    if (!txt) {
+      setIsSummarizing(false);  // Reset loading state if no text selected
+      return;
+    }
     const out = await runAI("summarize", txt);
-    if (!out) return;
+    if (!out) {
+      setIsSummarizing(false);  // Reset loading state if no output
+      return;
+    }
     const sel = editor?.getSelection?.();
     if (sel && Array.isArray(sel.blocks) && sel.blocks.length) {
       editor.replaceBlocks(sel.blocks, [
@@ -101,6 +116,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         { type: "paragraph", content: [out] }
       ]);
     }
+    setIsSummarizing(false);  // Reset loading state after completion
   }, [editor]);
 
   useEffect(() => {
@@ -149,30 +165,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
         ...(resolvedTheme === "dark" ? darkVars : lightVars)
       }}
     >
-      {/*<div className="flex gap-2 p-2">*/}
-        {/*<Button*/}
-        {/*  style={{*/}
-        {/*    paddingRight: level ? `${level*12 + 150 + 12}px` : undefined*/}
-        {/*  }}*/}
-        {/*  size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"*/}
-        {/*  onClick={handleGenerate}*/}
-        {/*  aria-label="AI Generate"*/}
-        {/*  title="AI"*/}
-        {/*>*/}
-        {/*  MatchAI*/}
-        {/*</Button>*/}
-        {/*<Button*/}
-        {/*  style={{*/}
-        {/*    paddingRight: level ? `${level*12 + 150 + 12}px` : undefined*/}
-        {/*  }}*/}
-        {/*  size="sm" className="bg-[#43734a] dark:bg-[#0e2912] dark:text-white  hover:text-black hover:bg-[#c1d9c4] dark:hover:bg-[#1d3d22]"*/}
-        {/*  onClick={handleSummarize}*/}
-        {/*  aria-label="Summarize"*/}
-        {/*  title="Summarization"*/}
-        {/*>*/}
-        {/*  Summarize Matcha*/}
-        {/*</Button>*/}
-      {/*</div>*/}
+
       <BlockNoteView
         editable={editable}
         editor={editor}

@@ -9,14 +9,14 @@ const Error = () => {
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">
       <Image
-        src="/error.png"
+        src="public/Drawing_Images/Transparent2.png"
         height="300"
         width="300"
         alt="Error"
         className="dark:hidden"
       />
       <Image
-        src="/error-dark.png"
+        src="public/Drawing_Images/Transparent4.png"
         height="300"
         width="300"
         alt="Error"
