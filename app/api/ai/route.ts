@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const system =
       mode === "summarize"
         ? "You are a concise summarizer. Summarize faithfully in plain text only, without any markdown or formatting (such as **bold**, ## headings, or code blocks). Always use the same language as the user's input, and avoid any special characters or symbols like ''' or ###."
-        : "You are a helpful writing assistant. Follow the instruction and produce clear, useful Markdown.";
+        : "You are a helpful writing assistant. Follow the instruction and produce clear, useful Markdown. Plain text only, without any markdown or formatting (such as **bold**, ## headings, or code blocks)";
 
     const body = {
       model: MODEL,
