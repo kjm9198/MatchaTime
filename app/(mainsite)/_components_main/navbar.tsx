@@ -40,12 +40,12 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const startGeneratingLoader = () => {
     if (genTimeoutRef.current) clearTimeout(genTimeoutRef.current);
     setIsGenerating(true);
-    genTimeoutRef.current = setTimeout(() => setIsGenerating(false), 8000);
+    genTimeoutRef.current = setTimeout(() => setIsGenerating(false), 12000);
   };
   const startSummarizingLoader = () => {
     if (sumTimeoutRef.current) clearTimeout(sumTimeoutRef.current);
     setIsSummarizing(true);
-    sumTimeoutRef.current = setTimeout(() => setIsSummarizing(false), 8000);
+    sumTimeoutRef.current = setTimeout(() => setIsSummarizing(false), 12000);
   };
   useEffect(() => {
     return () => {
