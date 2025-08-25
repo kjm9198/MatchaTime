@@ -4,27 +4,29 @@ import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MenuIcon, ArrowRight } from "lucide-react";
+import { MenuIcon, ArrowRight, MoreHorizontal } from "lucide-react";
 import { Title } from "@/app/(mainsite)/_components_main/title";
 import { Banner } from "@/app/(mainsite)/_components_main/banner";
 import { Menu } from "@/app/(mainsite)/_components_main/menu";
 import { Publish } from "@/app/(mainsite)/_components_main/publish";
 import { Button } from "@/components/ui/button";
-
 import { useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Spinner } from "@/app/(marketing)/_components/spinner";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface NavbarProps {
   isCollapsed: boolean;
   onResetWidth: () => void;
 }
 
-
-
 export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const params = useParams();
-
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiOpen, setAiOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -59,7 +61,6 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   if (document === null) return null;
 
-  // @ts-ignore
   return (
     <>
       <nav className="bg-[#43734a] dark:bg-[#0e2912] px-3 py-2 w-full flex items-center gap-x-4">
@@ -72,7 +73,9 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
         )}
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
-          <div className="flex items-center gap-x-2">
+
+          {/* Desktop Buttons */}
+          <div className="hidden md:flex items-center gap-x-2">
             <Popover open={aiOpen} onOpenChange={setAiOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -124,6 +127,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                 </div>
               </PopoverContent>
             </Popover>
+
             <Button
               size="sm"
               disabled={isGenerating || isSummarizing}
@@ -141,6 +145,35 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
             </Button>
             <Publish initialData={document} />
             <Menu documentId={document._id} />
+          </div>
+
+          {/* Mobile Dropdown */}
+          <div className="flex md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <MoreHorizontal className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem
+                  onClick={() => {
+                    fire("generate", aiPrompt.trim());
+                  }}
+                >
+                  {isGenerating ? "Generating..." : "MatchAI"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => fire("summarize")}>
+                  {isSummarizing ? "Summarizing..." : "Summarize"}
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Publish initialData={document} />
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Menu documentId={document._id} />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </nav>
