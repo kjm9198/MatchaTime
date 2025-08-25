@@ -10,7 +10,7 @@ import { Banner } from "@/app/(mainsite)/_components_main/banner";
 import { Menu } from "@/app/(mainsite)/_components_main/menu";
 import { Publish } from "@/app/(mainsite)/_components_main/publish";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Spinner } from "@/app/(marketing)/_components/spinner";
 import {
@@ -31,6 +31,28 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const [aiOpen, setAiOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // 8s loaders with dedup + cleanup
+  const genTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sumTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startGeneratingLoader = () => {
+    if (genTimeoutRef.current) clearTimeout(genTimeoutRef.current);
+    setIsGenerating(true);
+    genTimeoutRef.current = setTimeout(() => setIsGenerating(false), 8000);
+  };
+  const startSummarizingLoader = () => {
+    if (sumTimeoutRef.current) clearTimeout(sumTimeoutRef.current);
+    setIsSummarizing(true);
+    sumTimeoutRef.current = setTimeout(() => setIsSummarizing(false), 8000);
+  };
+  useEffect(() => {
+    return () => {
+      if (genTimeoutRef.current) clearTimeout(genTimeoutRef.current);
+      if (sumTimeoutRef.current) clearTimeout(sumTimeoutRef.current);
+    };
+  }, []);
 
   const document = useQuery(api.documents.getById, {
     documentId: params.documentId as Id<"documents">,
@@ -41,11 +63,8 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
     window.dispatchEvent(
       new CustomEvent("matcha:editor-action", { detail: { type, prompt } })
     );
-    if (type === "generate") {
-      setIsGenerating(true);
-    } else {
-      setIsSummarizing(true);
-    }
+    if (type === "generate") startGeneratingLoader();
+    else startSummarizingLoader();
   };
 
   if (document === undefined) {
@@ -71,11 +90,12 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
             className="h-6 w-6 text-heading"
           />
         )}
+
         <div className="flex items-center justify-between w-full">
           <Title initialData={document} />
 
-          {/* Desktop Buttons */}
-          <div className="hidden md:flex items-center gap-x-2">
+          {/* Always-visible actions (desktop + mobile): MatchAI + Summarize */}
+          <div className="flex items-center gap-x-2">
             <Popover open={aiOpen} onOpenChange={setAiOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -143,40 +163,43 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                 "Summarize"
               )}
             </Button>
-            <Publish initialData={document} />
-            <Menu documentId={document._id} />
-          </div>
 
-          {/* Mobile Dropdown */}
-          <div className="flex md:hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
-                  <MoreHorizontal className="h-6 w-6" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem
-                  onClick={() => {
-                    fire("generate", aiPrompt.trim());
-                  }}
+            {/* Mobile-only: ... with Publish + Menu */}
+            <div className="flex md:hidden">
+              <DropdownMenu open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <MoreHorizontal className="h-6 w-6" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-44"
+                  onCloseAutoFocus={(e) => e.preventDefault()}
                 >
-                  {isGenerating ? "Generating..." : "MatchAI"}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => fire("summarize")}>
-                  {isSummarizing ? "Summarizing..." : "Summarize"}
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Publish initialData={document} />
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Menu documentId={document._id} />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem asChild>
+                    <div>
+                      <Publish initialData={document} />
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <div>
+                      <Menu documentId={document._id} />
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Desktop-only: Publish + Menu inline */}
+            <div className="hidden md:flex items-center gap-x-2">
+              <Publish initialData={document} />
+              <Menu documentId={document._id} />
+            </div>
           </div>
         </div>
       </nav>
+
       {document.isArchived && <Banner documentId={document._id} />}
     </>
   );
